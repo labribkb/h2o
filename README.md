@@ -11,7 +11,7 @@ The method is :
 - Hierarchical: The method leverages a hierarchical segmentation algorithm.
 - Occlusion-based: The method repetitively alters the input image in various ways. It then evaluates the relative importance of the altered pixels by measuring the deteriorations induced on the prediction vector. 
 
-The method hierarchically segments an input imag. For each level in the hierarchy, H2O builds a binary mask for each combination of superpixels. 
+The method hierarchically segments an input image. For each level in the hierarchy, H2O builds a binary mask for each combination of superpixels. 
 Each mask is used to alter the input image with *m* different colors. The altered images are fed to the model. The difference between the prediction of the input image and the prediction of the altered image is used to compute an importance score for the masked pixels, hierarchically.
 These scores are aggregated into the final saliency map. 
 
