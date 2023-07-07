@@ -17,6 +17,14 @@ These scores are aggregated into the final saliency map.
 
 ![image](./H2O_process_v6.png "Overview of the H2O process.")
 
+## Illustration
+
+Visual results of the execution of H2O on three images taken from the Imagenet dataset.
+![image](./results_demo/pelican.jpg "Pelicans")
+![image](./results_demo/polar_bear.jpg "Polar bear")
+![image](./results_demo/tiger.jpg "Tiger")
+
+
 ## Usage
 
 To repository is composed of: 
@@ -42,5 +50,4 @@ This work has been accepted for publication at CBMI 2023. Please cite this work 
 Luc-Etienne Pommé, Romain Bourqui, and Romain Giot. 2023. H2O: Heatmap
 by Hierarchical Occlusion. In Proceedings of Content-based Multimedia In-
 dexing (CBMI2023).
-
 ```
