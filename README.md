@@ -28,6 +28,7 @@ Visual results of the execution of H2O on three images taken from the Imagenet d
 ## Usage
 
 To repository is composed of: 
+- The dependencies of H2O (requirements.txt)
 - The implmentation of H2O, the explanation method (h2o.py)
 - An example of its usage (h2o_example.py)
 - Three image examples taken from the Imagenet dataset (./imagenet/)
