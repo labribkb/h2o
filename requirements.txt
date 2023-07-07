@@ -1,0 +1,6 @@
+cmapy==0.6.6
+numpy==1.23.2
+Pillow==9.4.0
+scikit-image==0.19.3
+scipy==1.4.1
+tensorflow==2.11.0
