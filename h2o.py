@@ -1,8 +1,21 @@
-import cmapy
+"""This class implements the model-agnostic, class-agnostic hierarchical occlusion-based explanation 
+method called H^2O.
+"""
+
+__author__ = "Luc Etienne Pommé"
+__copyright__ = "Copyright (C) Univ. de Bordeaux"
+__credits__ = ["Luc Etienne Pommé", "Romain Bourqui", "Romain Giot"]
+
+__licence__ = "GPL"
+__version__ = "1.0"
+__maintainer__ = "Luc Etienne Pommé"
+__email__ = "luc.pomme-cassierou@u-bordeaux.fr"
+
 import gc
 import itertools
 import numpy as np
 
+import cmapy
 from skimage.segmentation import slic as skslic
 from scipy.ndimage.filters import gaussian_filter
 
@@ -19,7 +32,7 @@ class H2O():
             predict_fct: the function pointer to make a prediction from a model.
             nb_classes: the number of classes in the classification task
             max_iter: the maximum number of iterations in the SLIC algorithm to hierarchically segment the input image, optional
-            
+
         Returns
             combi_masks: the set of masks computed to alter the input image
             nb_evaluation_per_pixels: an array containing the number of times each pixel appears in a mask
@@ -31,7 +44,6 @@ class H2O():
         self.max_iter = max_iter
         self.predict_fct = predict_fct
 
-
     def compute_combinations(self, n):
         """
         Description
@@ -39,7 +51,7 @@ class H2O():
 
         Parameters
             n: the number of elements in the set
-            
+
         Returns
             combinations: the list of combinations of all k elements, by index
         """
@@ -47,7 +59,6 @@ class H2O():
         for i in range(1, len(n)):
             combinations += (itertools.combinations(n, i))
         return combinations
-
 
     def compute_predictions(self, images, model):
         """
@@ -57,7 +68,7 @@ class H2O():
         Parameters
             images: the altered images to predict
             model: the model to explain
-            
+
         Returns
             predictions: the prediction vectors for each altered image
         """
@@ -73,7 +84,6 @@ class H2O():
             predictions[start:stop] = self.predict_fct(model, images[start:stop])
         return predictions
 
-
     def get_predictions(self, model, image):
         """
         Description
@@ -82,13 +92,12 @@ class H2O():
         Parameters
             model: the model to explain
             image: the input image
-            
+
         Returns
             prediction: the prediction vector for the input image
         """
         # Remove the batch dimension
         return np.asarray(self.predict_fct(model, image)[0])
-
 
     def color_strategy(self, image, z):
         """
@@ -117,7 +126,6 @@ class H2O():
                     for bstep in range(z):
                         self.colors.append((start_r+rstep*step_r, start_g+gstep*step_g, start_b+bstep*step_b))
 
-
     def generate_mask_combinations(self, image, slic_sigma, channel):
         """
         Description
@@ -127,7 +135,7 @@ class H2O():
             image: the input image
             slic_sigma: the width of the Gaussian smoothing kernel for pre-processing for each dimension of the image in the SLIC algorithm.
             channel: the channel dimension index in the input image
-            
+
         Returns
             combi_masks: the set of masks computed to alter the input image
             nb_evaluation_per_pixels: an array containing the number of times each pixel appears in a mask
@@ -178,8 +186,7 @@ class H2O():
         del queue_masks
         gc.collect()
         return combi_masks, nb_evaluation_per_pixels
-    
-    
+
     def alter_and_predict_images(self, original_image, combi_masks, model):
         """
         Description
@@ -189,7 +196,7 @@ class H2O():
             original_image: the input image
             combi_masks: the set of masks computed to alter the input image
             model: the model to explain
-            
+
         Returns
             predictions: the array of prediction vectors per altered image
         """
@@ -204,8 +211,7 @@ class H2O():
             predictions[icolor] = predictions_for_color
             del masked_images
         return predictions.reshape((nb_masks*nb_colors, self.nb_classes), order="F")
-    
-    
+
     def alteration_dist(self, prediction, base_prediction):
         """
         Description
@@ -221,8 +227,7 @@ class H2O():
         res = base_prediction - prediction
         res[res < 0] = 0
         return np.sum(res * base_prediction)
-    
-    
+
     def compute_alteration_scores(self, total_nb_masks, predictions, base_pred):
         """
         Description
@@ -240,8 +245,7 @@ class H2O():
         for i, _ in enumerate(d_pred):
             d_pred[i] = self.alteration_dist(predictions[i], base_pred)
         return d_pred
-    
-    
+
     def aggregate_alter_scores(self, w, h, combi_masks, alter_scores, nb_clrs, nb_px_per_mask, nb_eval_per_pixels):
         """
         Description
@@ -265,8 +269,7 @@ class H2O():
             saliency_map[mask] += scores[imask]
         saliency_map = saliency_map / nb_eval_per_pixels
         return saliency_map
-    
-    
+
     def h2o_explain_image(self, image, model, channel=-1, subdivision_per_channels=3, slic_sigma=1):
         """
         Description
@@ -286,17 +289,17 @@ class H2O():
         image = image[0]
         w = image.shape[0]
         h = image.shape[1]
-        
+
         self.color_strategy(image, z=subdivision_per_channels)
         combi_masks, nb_eval_per_pixels = self.generate_mask_combinations(image, slic_sigma, channel)
-        
+
         nb_colors = len(self.colors)
         total_nb_masks = nb_colors * len(combi_masks)
         predictions = self.alter_and_predict_images(image, combi_masks, model)
         alteration_scores = self.compute_alteration_scores(total_nb_masks, predictions, base_pred)
-        
+
         nb_px_per_mask = np.sum(combi_masks, axis=(1, 2))
-        saliency_map = self.aggregate_alter_scores(w, h, combi_masks, alteration_scores, nb_colors, 
+        saliency_map = self.aggregate_alter_scores(w, h, combi_masks, alteration_scores, nb_colors,
                                                    nb_px_per_mask, nb_eval_per_pixels)
 
         del combi_masks
@@ -304,7 +307,6 @@ class H2O():
         del predictions
         gc.collect()
         return saliency_map
-    
 
     def superimpose_image_heatmap(self, image, heatmap, alpha=0.6, beta=0.4):
         """
@@ -319,7 +321,6 @@ class H2O():
             superimposed: the superimposition of the image and the heatmap
         """
         return alpha * image + beta * heatmap
-    
 
     def threshold_hms(self, saliency_map, k_sigma=1.):
         """
@@ -340,7 +341,6 @@ class H2O():
         saliency_map[saliency_map < th] = min_hm
         return saliency_map
 
-
     def normalize(self, array):
         """
         Description
@@ -357,7 +357,6 @@ class H2O():
         if M-m == 0:
             return array
         return (array - m) / (M - m)
-
 
     def final_heatmap(self, image, saliency_map, apply_gaussian=True, sigma=3, threshold=True, sm_save_path=None):
         """
@@ -378,7 +377,7 @@ class H2O():
         """
         original_img = np.copy(image).astype('uint8')
         original_img = np.squeeze(original_img)
-        
+
         saliency_map = self.normalize(saliency_map) * 255
         saliency_map = saliency_map.astype('uint8')
         if sm_save_path is not None:

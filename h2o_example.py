@@ -1,3 +1,14 @@
+"""This code illustrates the usage of the explanation method called H^2O."""
+
+__author__ = "Luc Etienne Pommé"
+__copyright__ = "Copyright (C) Univ. de Bordeaux"
+__credits__ = ["Luc Etienne Pommé", "Romain Bourqui", "Romain Giot"]
+
+__licence__ = "GPL"
+__version__ = "1.0"
+__maintainer__ = "Luc Etienne Pommé"
+__email__ = "luc.pomme-cassierou@u-bordeaux.fr"
+
 import numpy as np
 import os
 from PIL import Image
