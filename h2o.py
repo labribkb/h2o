@@ -84,7 +84,7 @@ class H2O():
         """
         nb_imgs = np.shape(images)[0]
         start = 0
-        step = 1024
+        step = 64
         stop = nb_imgs
         predictions = np.empty((nb_imgs, self.nb_classes))
         while start + step < stop:
