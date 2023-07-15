@@ -286,7 +286,7 @@ class H2O():
             Computes a class-agnostic saliency map explanation for the input image, based on the model predictions.
 
         Parameters
-            image: the input image to explain
+            image: the input image to explain. The image is assumed to have been already preprocessed. 
             model: the model to explain
             channel: the channel dimension index in the input image
             subdivision_per_channels: the number of splits per channel in the RGB cube restricted to the colors in the input image, to determine the number of masking colors. k subdivisions will generate k^3 colors
