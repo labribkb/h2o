@@ -25,7 +25,7 @@ These scores are aggregated into the final saliency map.
 
 ## Usage
 
-To repository is composed of: 
+The repository is composed of: 
 - The dependencies of H2O: [requirements.txt](requirements.txt)
 - The implmentation of H2O, the explanation method: [h2o.py](h2o.py)
 - An example of its usage: [h2o_example.py](h2o_example.py)
